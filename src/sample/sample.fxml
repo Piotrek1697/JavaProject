@@ -27,9 +27,6 @@
          <bottom>
             <Button fx:id="start" mnemonicParsing="false" onAction="#startWeatherThread" text="Start" BorderPane.alignment="CENTER" />
          </bottom>
-         <left>
-            <Button fx:id="checkBUtton" mnemonicParsing="false" onAction="#checkAction" text="check" BorderPane.alignment="CENTER" />
-         </left>
       </BorderPane>
    </children>
 </GridPane>

@@ -14,7 +14,7 @@ public class WeatherThread implements Runnable, Observable {
 
 
     public WeatherThread() {
-        interval = 6000;
+        interval = 60001;
     }
 
     public WeatherThread(int interval) {
@@ -44,7 +44,6 @@ public class WeatherThread implements Runnable, Observable {
     public void updateObservers() {
         for (Observer o : observerList) {
             Weather weather = WeatherStation.getWeatherFromCity(o.getCity());
-            //Weather weather = new Weather(0,1024,92,-2,10);
             o.updateWeather(weather);
         }
     }

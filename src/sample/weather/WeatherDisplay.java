@@ -1,18 +1,17 @@
 package sample.weather;
 
-import sample.Context;
-import sample.Controller;
-import sample.model.DisplayWeather;
+import javafx.collections.ObservableList;
 import sample.model.Observer;
 
 public class WeatherDisplay implements Observer {
 
     private String city;
     private Weather weather;
-    private DisplayWeather displayWeather;
+    private ObservableList<Weather> weatherList;
 
-    public WeatherDisplay(String city) {
+    public WeatherDisplay(String city, ObservableList<Weather> weatherList) {
         this.city = city;
+        this.weatherList = weatherList;
     }
 
     public Weather getWeather() {
@@ -22,7 +21,8 @@ public class WeatherDisplay implements Observer {
     @Override
     public void updateWeather(Weather weather) {
         this.weather = weather;
-        Context.getInstance().setCurrentWeather(weather);
+        weatherList.add(weather);
+        System.out.println(weatherList.size());
     }
 
     @Override
