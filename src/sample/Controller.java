@@ -1,9 +1,14 @@
 package sample;
 
+import com.sun.javafx.event.EventQueue;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import sample.model.DisplayWeather;
+import sample.weather.Weather;
 import sample.weather.WeatherDisplay;
 import sample.weather.WeatherThread;
 
@@ -27,20 +32,37 @@ public class Controller {
 
     @FXML
     void startWeatherThread(ActionEvent event) {
+
         weatherThread = new WeatherThread();
-        weatherDisplay = new WeatherDisplay("Koluszki");
+        weatherDisplay = new WeatherDisplay("Warszawa");
 
         weatherThread.addObserver(weatherDisplay);
         weatherThread.start();
-        
+
+        updateLabel();
     }
 
+    public void updateLabel() {
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+                    temperatureLabel.textProperty().set(Context.getInstance().getCurrentWeather().toString());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+    }
 
     @FXML
     void checkAction(ActionEvent event) {
 
         temperatureLabel.setText(weatherDisplay.getWeather().toString());
-        System.out.println(weatherDisplay.getWeather().getTemp());
+        System.out.println(Context.getInstance().getCurrentWeather());
     }
 
 
