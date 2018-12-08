@@ -71,5 +71,17 @@ public class Controller {
 
     }
 
+    public static void wrongCityError(){
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText("Wrong city entered to textField");
+            alert.setContentText("Response from server: 400");
+
+            alert.showAndWait();
+        });
+
+    }
+
 
 }

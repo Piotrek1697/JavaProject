@@ -1,7 +1,11 @@
 package sample.weather;
 
+import javafx.scene.control.Alert;
+import sample.Controller;
 import sample.model.Observable;
 import sample.model.Observer;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class WeatherThread implements Runnable, Observable{
@@ -40,7 +44,7 @@ public class WeatherThread implements Runnable, Observable{
     }
 
     @Override
-    public void updateObservers() {
+    public void updateObservers() throws IOException {
         for (Observer o : observerList) {
             Weather weather = WeatherStation.getWeatherFromCity(o.getCity());
             o.updateWeather(weather);
@@ -73,6 +77,10 @@ public class WeatherThread implements Runnable, Observable{
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("Failed");
+            } catch (IOException e) {
+                Controller.wrongCityError();
+                return;
+
             }
         }
 

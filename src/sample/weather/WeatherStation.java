@@ -13,14 +13,14 @@ import java.util.Map;
 public class WeatherStation {
 
 
-    public static Weather getWeatherFromCity(String City){
+    public static Weather getWeatherFromCity(String City) throws IOException {
 
         String httpCity = City.replace(' ','+');
 
         StringBuffer response = new StringBuffer();
         String urlString = "http://api.openweathermap.org/data/2.5/weather?q="+ httpCity +"&units=metric&APPID=48ee905cfea07e1a3e313ac4091d723e";
 
-        try{
+
             URL url = new URL(urlString);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
@@ -36,9 +36,7 @@ public class WeatherStation {
             }
 
             in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
