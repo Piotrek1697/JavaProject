@@ -2,10 +2,9 @@ package sample.weather;
 
 import sample.model.Observable;
 import sample.model.Observer;
-
 import java.util.ArrayList;
 
-public class WeatherThread implements Runnable, Observable {
+public class WeatherThread implements Runnable, Observable{
 
     private Thread thread;
     private int interval;
