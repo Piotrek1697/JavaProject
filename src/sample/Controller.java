@@ -30,13 +30,12 @@ public class Controller {
             }
         });
     }
-
-
+    
     @FXML
     void startWeatherThread(ActionEvent event) {
 
         weatherThread = new WeatherThread();
-        weatherDisplay = new WeatherDisplay("Warszawa",weatherList);
+        weatherDisplay = new WeatherDisplay("New York",weatherList);
 
         weatherThread.addObserver(weatherDisplay);
         weatherThread.start();

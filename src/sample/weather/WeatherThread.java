@@ -53,6 +53,16 @@ public class WeatherThread implements Runnable, Observable {
         thread.start();
     }
 
+    public void stop(){
+        isRunning = false;
+    }
+
+    public void interrupt() {
+
+        isRunning = false;
+        thread.interrupt();
+    }
+
     @Override
     public void run() {
         isRunning = true;
