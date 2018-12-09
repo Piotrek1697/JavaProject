@@ -1,6 +1,5 @@
 package sample.weather;
 
-import javafx.scene.control.Alert;
 import sample.Controller;
 import sample.model.Observable;
 import sample.model.Observer;
@@ -27,6 +26,10 @@ public class WeatherThread implements Runnable, Observable{
 
     public int getInterval() {
         return interval;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
     }
 
     @Override
@@ -61,7 +64,6 @@ public class WeatherThread implements Runnable, Observable{
     }
 
     public void interrupt() {
-
         isRunning = false;
         thread.interrupt();
     }
@@ -78,7 +80,8 @@ public class WeatherThread implements Runnable, Observable{
                 Thread.currentThread().interrupt();
                 System.out.println("Failed");
             } catch (IOException e) {
-                Controller.wrongCityError();
+                Controller.threadError("Wrong city entered or no internet connection",
+                        "Check if there is no typo in city name or check your internet connection");
                 return;
 
             }
