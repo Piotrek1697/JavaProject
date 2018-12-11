@@ -1,0 +1,9 @@
+.root{
+    -fx-background-image: url("../images/summer.jpg");
+    -fx-background-repeat: repeat;
+    -fx-background-position: center center;
+}
+.menu-bar{
+    -fx-border-color: #00ff11;
+    -fx-background-color: #1fc42a;
+}

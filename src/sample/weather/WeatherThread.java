@@ -49,7 +49,7 @@ public class WeatherThread implements Runnable, Observable{
     @Override
     public void updateObservers() throws IOException {
         for (Observer o : observerList) {
-            Weather weather = WeatherStation.getWeatherFromCity(o.getCity());
+            Weather weather = WeatherStation.getWeatherFromCity(o.getCity(),o.getUnits());
             o.updateWeather(weather);
         }
     }
@@ -66,6 +66,11 @@ public class WeatherThread implements Runnable, Observable{
     public void interrupt() {
         isRunning = false;
         thread.interrupt();
+    }
+
+    public void resume(){
+        thread.start();
+        isRunning = true;
     }
 
     @Override

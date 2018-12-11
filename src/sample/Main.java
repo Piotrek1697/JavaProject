@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import sample.time.Season;
 
 import java.time.LocalDate;
 
@@ -15,7 +16,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.setTitle("Weather app");
-        Scene scene = new Scene(root, 700, 530);
+        Scene scene = new Scene(root, 544, 610);
 
         //added different styles in various seasons
         scene.getStylesheets().addAll(getStyleFileName(LocalDate.now()));
@@ -36,18 +37,21 @@ public class Main extends Application {
 
     private String getStyleFileName(LocalDate localDate){
         String styleFileName = null;
+        Season season = Season.of(localDate);
 
-        int day = localDate.getDayOfMonth();
-        int month = localDate.getMonthValue();
-
-        if ((month >= 12 && day > 20) || (month <= 3 && day < 21)){
-            styleFileName = "styles/winterStyle.css";
-        }else if(month <= 6 && day <= 21){
-            styleFileName = "styles/springStyle.css";
-        }else if (month <= 9 && day <= 22){
-            styleFileName = "styles/summerStyle.css";
-        }else {
-            styleFileName = "styles/autumnStyle.css";
+        switch (season) {
+            case SPRING:
+                styleFileName = "styles/springStyle.css";
+                break;
+            case SUMMER:
+                styleFileName = "styles/summerStyle.css";
+                break;
+            case AUTUMN:
+                styleFileName = "styles/autumnStyle.css";
+                break;
+            case WINTER:
+                styleFileName = "styles/winterStyle.css";
+                break;
         }
 
         return styleFileName;

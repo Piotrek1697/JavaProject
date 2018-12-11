@@ -13,12 +13,12 @@ import java.util.Map;
 public class WeatherStation {
 
 
-    public static Weather getWeatherFromCity(String City) throws IOException {
+    public static Weather getWeatherFromCity(String City, String units) throws IOException {
 
         String httpCity = City.replace(' ','+');
 
         StringBuffer response = new StringBuffer();
-        String urlString = "http://api.openweathermap.org/data/2.5/weather?q="+ httpCity +"&units=metric&APPID=48ee905cfea07e1a3e313ac4091d723e";
+        String urlString = "http://api.openweathermap.org/data/2.5/weather?q="+ httpCity +"&units="+units+"&APPID=48ee905cfea07e1a3e313ac4091d723e";
 
 
             URL url = new URL(urlString);

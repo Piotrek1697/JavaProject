@@ -1,0 +1,9 @@
+.root{
+    -fx-background-image: url("../images/winter.jpg");
+    -fx-background-repeat: repeat;
+    -fx-background-position: center center;
+}
+.menu-bar{
+    -fx-border-color: #41f4ee;
+    -fx-background-color: #3acbfc;
+}

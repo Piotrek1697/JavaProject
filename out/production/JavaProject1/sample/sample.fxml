@@ -1,32 +1,275 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.effect.Light.Distant?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<GridPane prefHeight="610.0" prefWidth="544.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <columnConstraints>
-      <ColumnConstraints />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints />
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <BorderPane prefHeight="230.0" prefWidth="296.0">
-         <center>
-            <Label fx:id="temperatureLabel" style="-fx-background-color: #5ff442;" text="  " BorderPane.alignment="CENTER">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font>
-            </Label>
-         </center>
-         <bottom>
-            <Button fx:id="start" mnemonicParsing="false" onAction="#startWeatherThread" text="Start" BorderPane.alignment="CENTER" />
-         </bottom>
-      </BorderPane>
+      <VBox prefHeight="665.0" prefWidth="728.0">
+         <children>
+            <MenuBar maxWidth="1.7976931348623157E308" style="-fx-border-radius: 10; -fx-background-radius: 10;">
+              <menus>
+                <Menu fx:id="menuFile" mnemonicParsing="false" style="-fx-border-color: #000000; -fx-border-radius: 10; -fx-font-size: 12; -fx-font-weight: bold;" text="File">
+                  <items>
+                    <MenuItem fx:id="openMenuItem" mnemonicParsing="false" onAction="#fileOpen" text="Open">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                        <MenuItem fx:id="saveMenuItem" mnemonicParsing="false" onAction="#fileSave" text="Save">
+                           <accelerator>
+                              <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                  </items>
+                </Menu>
+              </menus>
+               <VBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </VBox.margin>
+               <effect>
+                  <DropShadow color="#212020" height="42.94" radius="22.302500000000002" spread="0.36" width="48.27" />
+               </effect>
+            </MenuBar>
+            <HBox alignment="TOP_RIGHT" fillHeight="false" prefHeight="114.0" prefWidth="719.0">
+               <children>
+                  <VBox alignment="TOP_RIGHT" prefHeight="119.0" prefWidth="212.0">
+                     <children>
+                        <HBox alignment="TOP_CENTER" prefHeight="35.0" prefWidth="188.0">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="59.0" style="-fx-background-color: #c6c5c4; -fx-background-radius: 10;" text="City: " textAlignment="CENTER">
+                                 <font>
+                                    <Font name="System Bold" size="18.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                                 <padding>
+                                    <Insets left="2.0" />
+                                 </padding>
+                              </Label>
+                              <TextField fx:id="cityTextField" alignment="CENTER" prefHeight="25.0" prefWidth="108.0">
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font name="System Bold Italic" size="14.0" />
+                                 </font>
+                                 <tooltip>
+                                    <Tooltip text="From where you want get weather? Enter city (example. Wroclaw,PL)" />
+                                 </tooltip>
+                              </TextField>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="34.0" prefWidth="167.0">
+                           <children>
+                              <Button fx:id="startButton" mnemonicParsing="false" onAction="#startWeatherThread" prefHeight="24.0" prefWidth="24.0" style="-fx-base: #b6e7c9; -fx-background-radius: 20;">
+                                 <tooltip>
+                                    <Tooltip text="Start weather thread" />
+                                 </tooltip>
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </Button>
+                              <Button fx:id="pauseButton" mnemonicParsing="false" onAction="#pauseWeatherThread" text="Pause">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                                 <tooltip>
+                                    <Tooltip text="Pause weather thread" />
+                                 </tooltip>
+                              </Button>
+                              <Button fx:id="stopButton" mnemonicParsing="false" onAction="#stopWeatherThread" style="-fx-base: #bc6362; -fx-background-radius: 20;">
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                                 <tooltip>
+                                    <Tooltip text="Stop weather thread" />
+                                 </tooltip>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="3.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets top="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="82.0">
+                     <children>
+                        <ToggleButton fx:id="celsiusToggle" mnemonicParsing="false" onAction="#toCelsius" prefWidth="40.0" selected="true" text="°C">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="temperatureToggle" />
+                           </toggleGroup>
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </ToggleButton>
+                        <ToggleButton fx:id="fahrenheitToggle" mnemonicParsing="false" onAction="#toFahrenheit" prefWidth="40.0" text="°F" toggleGroup="$temperatureToggle">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </ToggleButton>
+                     </children>
+                     <HBox.margin>
+                        <Insets top="10.0" />
+                     </HBox.margin>
+                  </HBox>
+                  <VBox>
+                     <HBox.margin>
+                        <Insets left="10.0" right="5.0" top="10.0" />
+                     </HBox.margin>
+                     <children>
+                        <Label fx:id="temperatureLabel" alignment="CENTER" contentDisplay="CENTER" prefHeight="27.0" prefWidth="197.0" style="-fx-background-color: #bcbbba; -fx-background-radius: 10;" text="Temperature:" textAlignment="CENTER">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                           <effect>
+                              <Lighting diffuseConstant="1.43" specularExponent="40.0" surfaceScale="2.29">
+                                 <bumpInput>
+                                    <Shadow />
+                                 </bumpInput>
+                                 <light>
+                                    <Light.Distant />
+                                 </light>
+                              </Lighting>
+                           </effect>
+                        </Label>
+                        <TextArea fx:id="tempArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true">
+                           <effect>
+                              <Lighting>
+                                 <bumpInput>
+                                    <Shadow />
+                                 </bumpInput>
+                                 <light>
+                                    <Light.Distant />
+                                 </light>
+                              </Lighting>
+                           </effect>
+                           <VBox.margin>
+                              <Insets top="3.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </TextArea>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <HBox>
+               <children>
+                  <LineChart fx:id="weatherChart" prefHeight="288.0" prefWidth="448.0" style="-fx-background-color: #a7aeba; -fx-background-radius: 20;">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" fx:id="xAxis" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis fx:id="yAxis" prefHeight="319.0" prefWidth="47.0" side="LEFT" />
+                    </yAxis>
+                     <effect>
+                        <Lighting diffuseConstant="1.95" specularConstant="1.61" specularExponent="40.0" surfaceScale="2.71">
+                           <bumpInput>
+                              <Shadow />
+                           </bumpInput>
+                           <light>
+                              <Light.Distant />
+                           </light>
+                        </Lighting>
+                     </effect>
+                  </LineChart>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <HBox.margin>
+                        <Insets left="5.0" />
+                     </HBox.margin>
+                     <children>
+                        <Label text="Chart Types" />
+                        <Button mnemonicParsing="false" text="Humidity">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Button>
+                        <Button mnemonicParsing="false" text="Pressure" />
+                        <Button mnemonicParsing="false" text="Forecast">
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <ProgressIndicator fx:id="huminidityPercents" prefHeight="60.0" prefWidth="60.0" progress="0.0" />
+               </children>
+            </HBox>
+            <VBox alignment="BOTTOM_RIGHT" prefHeight="71.0" prefWidth="719.0">
+               <children>
+                  <HBox alignment="BOTTOM_RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="50.0" prefWidth="689.0">
+                     <children>
+                        <Label fx:id="localTimeLabel" alignment="CENTER" style="-fx-background-color: #e2e2e2; -fx-background-radius: 10;">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                           <HBox.margin>
+                              <Insets bottom="5.0" right="5.0" />
+                           </HBox.margin>
+                           <padding>
+                              <Insets left="5.0" right="5.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
    </children>
 </GridPane>
