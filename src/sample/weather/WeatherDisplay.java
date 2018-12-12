@@ -30,7 +30,7 @@ public class WeatherDisplay implements Observer {
     public void updateWeather(Weather weather) {
         this.weather = weather;
         weatherList.add(weather);
-        timeList.add(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm")));
+        timeList.add(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH.mm")));
         System.out.println(weatherList.size());
     }
 

@@ -17,7 +17,6 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import sample.data.JsonParser;
 import sample.time.TimeThread;
@@ -25,16 +24,10 @@ import sample.weather.Weather;
 import sample.weather.WeatherDisplay;
 import sample.weather.WeatherThread;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Controller {
 
@@ -70,6 +63,22 @@ public class Controller {
     private ProgressIndicator huminidityPercents;
     @FXML
     private TextArea tempArea;
+    @FXML
+    private ProgressBar threadProgressBar;
+    @FXML
+    private ProgressIndicator threadProgressIndicator;
+    @FXML
+    private ToggleButton chartTypeTemperature;
+
+    @FXML
+    private ToggleGroup chartTypeToggle;
+
+    @FXML
+    private ToggleButton chartTypeHumidity;
+
+    @FXML
+    private ToggleButton chartTypePressure;
+
 
 
     private final String CELSIUS = "\u00b0C";
@@ -83,6 +92,8 @@ public class Controller {
     private XYChart.Series<String, Number> weatherSeries = new XYChart.Series<>();
     private String units = "metric";
     private String unitsLabel = CELSIUS;
+    private String chartType = "temperature";
+    private String yLabelString = "Temp [" + unitsLabel + "]";
 
     @FXML
     public void initialize() {
@@ -96,6 +107,18 @@ public class Controller {
         localTimeListThread.addListener((ListChangeListener<LocalTime>) c -> {
             c.next();
             if (c.wasAdded()) {
+
+                if (weatherThread != null) {
+                    if (weatherThread.isUpdatedObserver()) {
+                        updateThreadProgress();
+                    } else {
+                        Platform.runLater(() -> {
+                            threadProgressBar.setProgress(0);
+                            threadProgressIndicator.setProgress(0);
+                        });
+                    }
+                }
+
                 updateTimeLabel();
             }
         });
@@ -116,6 +139,8 @@ public class Controller {
         Image fileImage = new Image(getClass().getResourceAsStream("/images/fileIcon.png"));
         menuFile.setGraphic(new ImageView(fileImage));
 
+        chartTypeTemperature.setSelected(true);
+
     }
 
     private void initializeChart() {
@@ -131,12 +156,15 @@ public class Controller {
     }
 
     private void updateChartLabels() {
-        weatherSeries.setName("Temperature in time");
         xAxis.setLabel("Time (HH:mm)");
-        yAxis.setLabel("Temp [" + unitsLabel + "]");
+        if (unitsLabel.equals(FAHRENHEIT) && chartType.equals("temperature"))
+            yLabelString = "Temp [" + unitsLabel + "]";
+
+        yAxis.setLabel(yLabelString);
     }
 
     private void updateWeatherChart() {
+        updateChartLabels();
         weatherSeries.getData().clear();
         updateChartLabels();
         yAxis.setTickUnit(1);
@@ -144,19 +172,39 @@ public class Controller {
         xAxis.setAutoRanging(true);
         yAxis.setAutoRanging(true);
 
+        weatherSeries = getChartData(chartType);
 
-        for (int i = 0; i < weatherList.size(); i++) {
-            weatherSeries.getData().add(new XYChart.Data<>(timeList.get(i), weatherList.get(i).getTemp()));
+    }
+
+    public XYChart.Series<String, Number> getChartData(String chartType) {
+        XYChart.Series<String, Number> series = weatherSeries;
+
+        if ("humidity".equals(chartType)) {
+            for (int i = 0; i < weatherList.size(); i++)
+                series.getData().add(new XYChart.Data<>(timeList.get(i), weatherList.get(i).getHumidity()));
+
+        } else if ("pressure".equals(chartType)) {
+            for (int i = 0; i < weatherList.size(); i++)
+                series.getData().add(new XYChart.Data<>(timeList.get(i), weatherList.get(i).getPressure()));
+
+        } else if ("temperature".equals(chartType)) {
+            for (int i = 0; i < weatherList.size(); i++)
+                weatherSeries.getData().add(new XYChart.Data<>(timeList.get(i), weatherList.get(i).getTemp()));
+
         }
-
+        return series;
     }
 
     @FXML
     void startWeatherThread(ActionEvent event) {
         weatherList.clear();
         timeList.clear();
+
+        celsiusToggle.setDisable(true);
+        fahrenheitToggle.setDisable(true);
         if (weatherThread != null)
             weatherThread.stop();
+
         weatherThread = new WeatherThread();
         weatherSeries.getData().clear();
 
@@ -176,10 +224,10 @@ public class Controller {
                         "Firstly start weather thread");
             weatherThread.stop();
             System.out.println("Thread stopped");
-            /*weatherSeries.getData().clear();
-            temperatureLabel.textProperty().set("Temperature:");
-            tempArea.clear();*/
-            //weatherChart.getData().clear();
+            weatherThread.setUpdatedObserver(false);
+
+            celsiusToggle.setDisable(false);
+            fahrenheitToggle.setDisable(false);
 
         } catch (NullPointerException ex) {
             threadError("There is no weather thread started",
@@ -199,26 +247,53 @@ public class Controller {
     }
 
     @FXML
+    void resumeWeatherThread(ActionEvent event) {
+        try {
+            weatherThread.resume();
+        } catch (NullPointerException ex) {
+            threadError("There is no weather thread paused",
+                    "You have to pause thread, then resume it");
+        }
+    }
+
+    @FXML
     void fileOpen(ActionEvent event) {
-        ArrayList<Weather> weatherArrayList = new ArrayList<>();
+
+        if (weatherThread != null)
+            weatherThread.stop();
+
+        ArrayList<Weather> weatherArray;
+
+        Map map = null;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open weather data");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON","*.json"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
 
         File file = fileChooser.showOpenDialog(localTimeLabel.getScene().getWindow());
-        if (file != null){
+        if (file != null) {
             try {
-                weatherArrayList = JsonParser.getEntityArrayList(file.getAbsolutePath(), new TypeToken<ArrayList<Weather>>(){}.getType());
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+                map = JsonParser.getMap(file);
+            } catch (IOException e) {
+                threadError("Can't reach json", "Check your file path");
             }
-        }
 
-        weatherList.clear();
-        weatherList.addAll(weatherArrayList);
-        System.out.println(weatherArrayList);
-        System.out.println("File opended");
+            weatherArray = gson.fromJson(map.get("Weather").toString(), new TypeToken<ArrayList<Weather>>() {
+            }.getType());
+
+            String[] time = gson.fromJson(map.get("Time").toString(), String[].class);
+            String[] city = gson.fromJson(map.get("City").toString(), String[].class);
+
+            weatherList.clear();
+            weatherList.addAll(weatherArray);
+
+            timeList.clear();
+            timeList.addAll(Arrays.asList(time));
+
+            cityTextField.setText(city[0]);
+            System.out.println("File opended");
+        }
     }
 
     @FXML
@@ -226,18 +301,18 @@ public class Controller {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save weather data");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON","*.json"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
 
         File jsonFile = fileChooser.showSaveDialog(localTimeLabel.getScene().getWindow());
 
         Map<String, ArrayList<Object>> map = new HashMap<>();
-        map.put("Weather",new ArrayList<>(weatherList));
-        map.put("Time",new ArrayList<>(timeList));
-        map.put("City",new ArrayList<>(Collections.singleton(weatherDisplay.getCity())));
+        map.put("Weather", new ArrayList<>(weatherList));
+        map.put("Time", new ArrayList<>(timeList));
+        map.put("City", new ArrayList<>(Collections.singleton(cityTextField.getText())));
 
-        if (jsonFile != null){
+        if (jsonFile != null) {
             try (FileWriter fileWriter = new FileWriter(jsonFile)) {
-                gson.toJson(map,fileWriter);
+                gson.toJson(map, fileWriter);
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -245,7 +320,7 @@ public class Controller {
 
     }
 
-    public void updateWeatherLabel() {
+    private void updateWeatherLabel() {
         Platform.runLater(() -> {
             Weather weather = weatherList.get(weatherList.size() - 1);
             System.out.println(weather);
@@ -254,14 +329,25 @@ public class Controller {
             tempArea.textProperty().set("Temp min: " + String.valueOf(weather.getTemp_min()) + unitsLabel + "\n" + "Temp min: " + String.valueOf(weather.getTemp_max() + unitsLabel));
             System.out.println(timeList.get(timeList.size() - 1));
             updateWeatherChart();
-        });
 
+            threadProgressBar.setProgress(0);
+            threadProgressIndicator.setProgress(0);
+        });
     }
 
-    public void updateTimeLabel() {
+    private void updateTimeLabel() {
         Platform.runLater(() -> {
             String time = localTimeListThread.get(localTimeListThread.size() - 1).format(DateTimeFormatter.ofPattern("HH:mm:ss"));
             localTimeLabel.textProperty().set("Local time: " + time);
+
+        });
+    }
+
+    private void updateThreadProgress() {
+        Platform.runLater(() -> {
+            double progress = threadProgressBar.getProgress();
+            threadProgressBar.setProgress(progress + 5f / 300f);
+            threadProgressIndicator.setProgress(progress + 5f / 300f);
 
         });
     }
@@ -279,29 +365,35 @@ public class Controller {
 
     @FXML
     void toCelsius(ActionEvent event) {
-        try {
-            if (!weatherThread.isRunning()) {
-                units = "metric";
-                unitsLabel = CELSIUS;
-            }
-        }catch (NullPointerException ex){
-            units = "metric";
-            unitsLabel = CELSIUS;
-        }
+        units = "metric";
+        unitsLabel = CELSIUS;
     }
 
     @FXML
     void toFahrenheit(ActionEvent event) {
-        try {
-            if (!weatherThread.isRunning()) {
-                units = "imperial";
-                unitsLabel = FAHRENHEIT;
-            }
-        }catch (NullPointerException ex){
-            units = "imperial";
-            unitsLabel = FAHRENHEIT;
-        }
+        units = "imperial";
+        unitsLabel = FAHRENHEIT;
     }
 
+    @FXML
+    void changeChartTypeHum(ActionEvent event) {
+        chartType = "humidity";
+        yLabelString = "Humidity [%]";
+        updateWeatherChart();
+    }
+
+    @FXML
+    void changeChartTypePressure(ActionEvent event) {
+        chartType = "pressure";
+        yLabelString = "Pressure [hPa]";
+        updateWeatherChart();
+    }
+
+    @FXML
+    void changeChartTypeTemp(ActionEvent event) {
+        chartType = "temperature";
+        yLabelString = "Temp [" + unitsLabel + "]";
+        updateWeatherChart();
+    }
 
 }

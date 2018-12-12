@@ -13,6 +13,7 @@ public class WeatherThread implements Runnable, Observable{
     private int interval;
     private volatile boolean isRunning = false;
     private volatile ArrayList<Observer> observerList = new ArrayList<>();
+    private boolean updatedObserver = false;
 
 
     public WeatherThread() {
@@ -30,6 +31,14 @@ public class WeatherThread implements Runnable, Observable{
 
     public boolean isRunning() {
         return isRunning;
+    }
+
+    public boolean isUpdatedObserver() {
+        return updatedObserver;
+    }
+
+    public void setUpdatedObserver(boolean updatedObserver) {
+        this.updatedObserver = updatedObserver;
     }
 
     @Override
@@ -69,8 +78,9 @@ public class WeatherThread implements Runnable, Observable{
     }
 
     public void resume(){
-        thread.start();
         isRunning = true;
+        thread = new Thread(this);
+        thread.start();
     }
 
     @Override
@@ -80,10 +90,12 @@ public class WeatherThread implements Runnable, Observable{
         while (isRunning) {
             try {
                 updateObservers();
+                updatedObserver = true;
                 Thread.sleep(interval);
+                updatedObserver = false;
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Failed");
+                System.out.println("Thread interrupted");
             } catch (IOException e) {
                 Controller.threadError("Wrong city entered or no internet connection",
                         "Check if there is no typo in city name or check your internet connection");
