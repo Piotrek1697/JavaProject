@@ -4,6 +4,22 @@
     -fx-background-position: center center;
 }
 .menu-bar{
-    -fx-border-color: #41f4ee;
-    -fx-background-color: #3acbfc;
+    -fx-border-color: #88b4fc;
+    -fx-background-color: #bcd1f2;
+}
+.text-area {
+    -fx-background-color:  rgba(188, 187, 186, 0.8);
+}
+
+.text-area .scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.text-area .scroll-pane .viewport{
+    -fx-background-color: transparent;
+}
+
+
+.text-area .scroll-pane .content{
+    -fx-background-color: transparent;
 }

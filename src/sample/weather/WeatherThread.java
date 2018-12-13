@@ -7,6 +7,11 @@ import sample.model.Observer;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Class that represents thread where weather is updating.
+ * Updating observers which are added to this thread.
+ */
+
 public class WeatherThread implements Runnable, Observable{
 
     private Thread thread;
@@ -17,7 +22,7 @@ public class WeatherThread implements Runnable, Observable{
 
 
     public WeatherThread() {
-        interval = 60001;
+        interval = 60000;
     }
 
     public WeatherThread(int interval) {
@@ -25,6 +30,10 @@ public class WeatherThread implements Runnable, Observable{
 
     }
 
+    /**
+     *
+     * @return Sleep interval
+     */
     public int getInterval() {
         return interval;
     }
@@ -41,6 +50,10 @@ public class WeatherThread implements Runnable, Observable{
         this.updatedObserver = updatedObserver;
     }
 
+    /**
+     * Adding new observer that observing thread
+     * @param observer
+     */
     @Override
     public void addObserver(Observer observer) {
         if (!observerList.contains(observer)) {
@@ -48,6 +61,10 @@ public class WeatherThread implements Runnable, Observable{
         }
     }
 
+    /**
+     * Remove existing observer.
+     * @param observer
+     */
     @Override
     public void removeObserver(Observer observer) {
         if (observerList.contains(observer)) {
@@ -63,26 +80,41 @@ public class WeatherThread implements Runnable, Observable{
         }
     }
 
+    /**
+     * Starts weather thread.
+     */
     public void start() {
         thread = new Thread(this, "Weather Thread");
         thread.start();
     }
 
+    /**
+     * Stops weather thread.
+     */
     public void stop(){
-        isRunning = false;
-    }
-
-    public void interrupt() {
         isRunning = false;
         thread.interrupt();
     }
 
+    /**
+     * Pause weather thread.
+     */
+    public void pause() {
+        isRunning = false;
+    }
+
+    /**
+     * Resume pasued thread.
+     */
     public void resume(){
         isRunning = true;
         thread = new Thread(this);
         thread.start();
     }
 
+    /**
+     * This method is calling when thread starts.
+     */
     @Override
     public void run() {
         isRunning = true;
@@ -105,6 +137,5 @@ public class WeatherThread implements Runnable, Observable{
         }
 
     }
-
 
 }

@@ -5,8 +5,17 @@ import com.google.gson.Gson;
 import java.io.*;
 import java.util.Map;
 
+/**
+ * Class created to easily parsing json file to some objects' class.
+ */
 public class JsonParser {
 
+    /**
+     * Method parse json to map
+     * @param file
+     * @return Map of json file
+     * @throws IOException
+     */
     public static Map getMap(File file) throws IOException {
 
         Map map;

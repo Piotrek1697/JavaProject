@@ -10,9 +10,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
+/**
+ * Class that getting data from OpneWeather server.
+ */
 public class WeatherStation {
 
 
+    /**
+     * Open connection between Open weather server and computer.
+     * Response from server is json data where we can find some information about weather.
+     * @param City
+     * @param units
+     * @return Weather object
+     * @throws IOException
+     */
     public static Weather getWeatherFromCity(String City, String units) throws IOException {
 
         String httpCity = City.replace(' ','+');
